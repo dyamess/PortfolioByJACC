@@ -9,7 +9,9 @@
 <meta property="og:description" content="Secure web apps and automations that replace manual workflows.">
 <meta property="og:image" content="assets/img/profile.jpg">
 <meta name="theme-color" content="#0a0a0a">
-<link rel="icon" href="assets/img/profile.jpg">
+<link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -47,8 +49,17 @@
          background: color-mix(in srgb, var(--bg) 80%, transparent); border-bottom: 1px solid var(--border); }
   .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; }
   .brand { font-weight: 700; letter-spacing: -.02em; }
-  .brand span { color: var(--accent); }
-  .nav { display: flex; gap: 20px; font-size: 13px; color: var(--muted); }
+  .brand { display: inline-flex; align-items: center; gap: 9px; }
+  .brand img { border-radius: 7px; }
+  [data-theme="light"] .brand img { box-shadow: 0 0 0 1px var(--border); }
+  .brand span { color: var(--accent); margin-left: -9px; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .hero-meta .status { margin-top: 0; }
+  .status a { color: var(--text); font-weight: 500; }
+  .status a:hover { color: var(--accent); }
+  .bio a { color: var(--text); font-weight: 500; border-bottom: 1px solid var(--accent); }
+  .bio a:hover { color: var(--accent); }
+  .nav { display: flex; gap: 18px; margin: 0 16px; font-size: 13px; color: var(--muted); }
   .nav a:hover { color: var(--text); }
   .tools { display: flex; gap: 8px; align-items: center; }
   .btn-ghost { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 8px;
@@ -229,12 +240,11 @@
 
 <header class="top">
   <div class="wrap">
-    <a href="#" class="brand">JACC<span>.</span></a>
+    <a href="#" class="brand"><img src="assets/img/logo.svg" alt="" width="26" height="26">JACC<span>.</span></a>
     <nav class="nav">
       <a href="#projects">Projects</a>
       <a href="#experience">Experience</a>
       <a href="#stack">Stack</a>
-      <a href="#github">GitHub</a>
       <a href="#certifications">Certifications</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -260,15 +270,18 @@
         <h1>James Adrian Celestino
           <svg class="verified" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.6 2.1 3.3-.4 1.1 3.2 3 1.6-.8 3.3 1.6 3-2.4 2.3-.2 3.4-3.3.6L14.6 23 12 21l-2.6 2-2.3-2.5-3.3-.6-.2-3.4L1.2 14l1.6-3-.8-3.3 3-1.6 1.1-3.2 3.3.4z"/><path d="m8 12 3 3 5-6" stroke="var(--bg)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </h1>
-        <div class="role">Software Engineer · AM Group Asia</div>
-        <div class="status"><span class="dot"></span>Building systems in the Philippines · <span id="clock" class="mono">--:--</span> PHT</div>
+        <div class="role">Software Engineer · Lead Developer at AM Group Asia</div>
+        <div class="hero-meta">
+          <div class="status"><span class="dot"></span>Now building <a href="https://www.amgroup.asia" target="_blank" rel="noopener">amgroup.asia</a></div>
+          <div class="status">Philippines · <span id="clock" class="mono">--:--</span> PHT</div>
+        </div>
       </div>
     </div>
 
     <p class="bio">
-      I build <strong>secure web applications and automations</strong> that turn manual, paper-heavy workflows into fast, reliable systems.
-      I'm the lead developer of <strong>amgroup.asia</strong>, a Laravel platform that serves customers and every department across
-      AM Group Asia, Prime Food Lab and Alimentari. BSIT graduate, Bulacan State University.
+      I turn manual, paper-heavy work into <strong>fast, secure web systems</strong>. Right now I'm leading development of
+      <a href="https://www.amgroup.asia" target="_blank" rel="noopener">amgroup.asia</a> — one Laravel platform for customers
+      <strong>and every department</strong> across AM Group Asia, Prime Food Lab and Alimentari.
     </p>
 
     <div class="socials">
