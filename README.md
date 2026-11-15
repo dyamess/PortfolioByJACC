@@ -1,6 +1,6 @@
 # James Adrian Celestino — Portfolio
 
-Live: https://dyames-my-portfolio.vercel.app
+Live: https://portfoliobyjacc.vercel.app
 
 ## Folder structure
 ```
