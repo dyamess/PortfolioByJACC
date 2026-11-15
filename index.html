@@ -293,6 +293,10 @@
   .project.featured:hover .browser { box-shadow: 0 24px 60px -24px rgba(0,0,0,.6); }
   .stat b { font-variant-numeric: tabular-nums; }
 
+  /* pixelate-on-hover canvas */
+  .thumb { position: relative; }
+  .px { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+
   /* overlays */
   @keyframes zoomIn { from { opacity: 0; transform: scale(.94); } }
   @keyframes fadeIn { from { opacity: 0; } }
@@ -409,7 +413,7 @@
             <span class="tag">Live</span><span class="tag">Lead developer</span>
             <a class="p-link mono" href="https://www.amgroup.asia" target="_blank" rel="noopener">visit <svg class="icon"><use href="#i-arrow"/></svg></a>
           </div>
-          <p class="p-desc">One platform for customers and every department: catalog, quotations and a Sales Portal.</p>
+          <p class="p-desc">One place where customers find equipment and every department turns the inquiry into a sale.</p>
           <div class="p-stack"><span>Laravel 12</span><span>Livewire</span><span>Tailwind CSS</span><span>PostgreSQL</span><span>Cloudflare</span></div>
         </div>
       </article>
@@ -727,6 +731,55 @@
   });
 
   if (finePointer && !reduced) {
+    // Pixelate on hover: the screenshot breaks into pixels, then a pixel trail follows the cursor
+    document.querySelectorAll('.thumb, .browser-view').forEach(box => {
+      const img = box.querySelector('img'); if (!img) return;
+      const cv = document.createElement('canvas'); cv.className = 'px'; box.append(cv);
+      const ctx = cv.getContext('2d'), tiny = document.createElement('canvas'), tctx = tiny.getContext('2d');
+      let W = 0, H = 0, cell = 16, cols = 0, rows = 0, lv = null, raf = 0, last = 0;
+      const setup = () => {
+        const r = box.getBoundingClientRect();
+        if (!img.isConnected || !img.naturalWidth || !r.width) return false;
+        if (Math.round(r.width) === W && Math.round(r.height) === H) return true;
+        W = Math.round(r.width); H = Math.round(r.height);
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        cell = Math.max(10, Math.min(24, Math.round(W / 26)));
+        cols = Math.ceil(W / cell); rows = Math.ceil(H / cell); lv = new Float32Array(cols * rows);
+        cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.imageSmoothingEnabled = false;
+        const sc = Math.max(W / img.naturalWidth, H / img.naturalHeight), dw = img.naturalWidth * sc, dh = img.naturalHeight * sc;
+        tiny.width = cols; tiny.height = rows; tctx.imageSmoothingQuality = 'high';
+        tctx.drawImage(img, (W - dw) / 2 / cell, 0, dw / cell, dh / cell);
+        return true;
+      };
+      const frame = t => {
+        const dt = Math.min((t - last) / 1000, .05); last = t; let alive = false;
+        ctx.clearRect(0, 0, W, H);
+        for (let i = 0; i < lv.length; i++) {
+          let v = lv[i]; if (v <= 0) continue;
+          v -= dt * 1.5; lv[i] = v; if (v <= 0) continue;
+          const x = i % cols, y = (i / cols) | 0;
+          ctx.globalAlpha = Math.min(v, 1); ctx.drawImage(tiny, x, y, 1, 1, x * cell, y * cell, cell + .5, cell + .5); alive = true;
+        }
+        raf = alive ? requestAnimationFrame(frame) : 0;
+      };
+      const kick = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } };
+      box.addEventListener('pointerenter', () => {
+        if (!setup()) return;
+        for (let i = 0; i < lv.length; i++) lv[i] = Math.max(lv[i], .35 + Math.random() * .9);
+        kick();
+      });
+      box.addEventListener('pointermove', e => {
+        if (!lv) return; const r = box.getBoundingClientRect();
+        const cx = (e.clientX - r.left) / cell, cy = (e.clientY - r.top) / cell, R = 3.2;
+        for (let y = Math.max(0, Math.floor(cy - R)); y <= Math.min(rows - 1, cy + R); y++)
+          for (let x = Math.max(0, Math.floor(cx - R)); x <= Math.min(cols - 1, cx + R); x++) {
+            const d = Math.hypot(x + .5 - cx, y + .5 - cy);
+            if (d < R && Math.random() > .25) lv[y * cols + x] = Math.max(lv[y * cols + x], 1.25 - d / R * .6);
+          }
+        kick();
+      });
+    });
+
     // 3D tilt on the featured project preview
     const feat = document.querySelector('.project.featured'), br = feat && feat.querySelector('.browser');
     if (br) {
