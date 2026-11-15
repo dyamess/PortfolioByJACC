@@ -1,0 +1,6 @@
+# Local-only files (not uploaded to GitHub/Vercel)
+_private/
+.preview_tmp/
+.DS_Store
+Thumbs.db
+desktop.ini
