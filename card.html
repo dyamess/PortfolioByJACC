@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calling Card — James Adrian Castro Celestino</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0a; color: #ededed; font: 15px/1.6 Geist, Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .mono { font-family: "Geist Mono", ui-monospace, monospace; }
+  .ui { max-width: 720px; margin: 0 auto; padding: 40px 24px 0; }
+  .back { font-size: 13px; color: #8f8f8f; text-decoration: none; } .back:hover { color: #fff; }
+  h1 { font-size: 28px; font-weight: 600; letter-spacing: -.04em; margin-top: 18px; }
+  .lead { color: #8f8f8f; margin-top: 6px; max-width: 520px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  button { font: inherit; font-size: 13.5px; font-weight: 500; height: 42px; padding: 0 18px; border-radius: 10px; cursor: pointer;
+           border: 1px solid #2a2a2a; background: #171717; color: #ededed; }
+  button:hover { border-color: #5c5c5c; }
+  button.solid { background: #ededed; color: #0a0a0a; border-color: #ededed; }
+  .hint { font-size: 12.5px; color: #6b6b6b; margin-top: 12px; max-width: 560px; }
+
+  /* ---------- the card: real size is 3.5in x 2in ---------- */
+  .card { width: 3.5in; height: 2in; position: relative; overflow: hidden; font-family: Geist, Inter, system-ui, sans-serif;
+          -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .front { background: #fafafa; color: #111; display: grid; grid-template-columns: 1.2in 1fr; }
+  .front .strip { background: #0a0a0a; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 11px; }
+  .front .logo { width: 36px; height: 36px; }
+  .front .qr { width: .78in; height: .78in; background: #fff; padding: .05in; border-radius: 3px; }
+  .front .info { padding: 20px 18px 19px 20px; display: flex; flex-direction: column; justify-content: space-between; }
+  .name { font-size: 13.5px; font-weight: 600; letter-spacing: -.035em; line-height: 1.15; }
+  .role { font-size: 7.6px; color: #6b6b6b; margin-top: 4px; }
+  .rows { display: grid; gap: 5.5px; }
+  .rowc { display: flex; align-items: center; gap: 6px; font-size: 7.8px; line-height: 1; white-space: nowrap; }
+  .rowc svg { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: .65; flex-shrink: 0; }
+  .backside { background: #0a0a0a; color: #f2f2f2; display: grid; place-items: center; }
+  .backside::before { content: ""; position: absolute; inset: 9px; border: .75px solid rgba(255,255,255,.14); border-radius: 4px; }
+  .wm { font-size: 35px; font-weight: 700; letter-spacing: -.05em; }
+  .wm i { font-style: normal; color: #8a8a8a; }
+  .tag { position: absolute; bottom: 17px; left: 0; right: 0; text-align: center; font-size: 6.4px; letter-spacing: .26em; color: rgba(255,255,255,.5); }
+
+  /* ---------- on-screen preview ---------- */
+  .preview { max-width: 720px; margin: 0 auto; padding: 34px 24px 70px; display: flex; flex-wrap: wrap; gap: 26px; }
+  .preview .card { zoom: 1.85; border-radius: 6px; box-shadow: 0 14px 40px rgba(0,0,0,.6); }
+  .lab { font-size: 11px; color: #6b6b6b; margin-top: 10px; letter-spacing: .08em; }
+  .sheet { display: none; }
+  @media (max-width: 760px) { .preview .card { zoom: 1; } }
+
+  /* ---------- print ---------- */
+  @media print {
+    body { background: #fff; }
+    .ui, .lab { display: none !important; }
+    .preview { padding: 0; margin: 0; max-width: none; display: block; }
+    .preview .card { zoom: 1; border-radius: 0; box-shadow: none; }
+    .pg { display: grid; grid-template-columns: 3.5in 3.5in; justify-content: center; break-after: page; }
+    .pg:last-child { break-after: auto; }
+    .pg .front { outline: .2mm solid #d4d4d4; outline-offset: -.1mm; }
+  }
+</style>
+<style id="mode"></style>
+</head>
+<body>
+
+<div class="ui">
+  <a class="back mono" href="./">← back to portfolio</a>
+  <h1>Calling card</h1>
+  <p class="lead">Standard size, 3.5 × 2 inches. The QR code opens my portfolio.</p>
+  <div class="actions">
+    <button class="solid" data-mode="shop">Save as PDF for a print shop</button>
+    <button data-mode="sheet">Print a sheet of 10 (A4)</button>
+  </div>
+  <p class="hint">In the print window, turn on “Background graphics” so the black areas print. For the A4 sheet, print on both sides (flip on the long edge) and cut along the grey lines.</p>
+</div>
+
+<div class="preview">
+  <div class="side">
+    <div class="card front" id="front">
+      <div class="strip">
+        <svg class="logo" viewBox="0 0 64 64"><path d="M36 16v22a10 10 0 0 1-20 0" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/><circle cx="47" cy="45" r="5" fill="#a3a3a3"/></svg>
+        <svg class="qr" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29"><path class="qrline" stroke="#0a0a0a" d="M0 0.5h7m2 0h5m3 0h2m3 0h7m-29 1h1m5 0h1m1 0h5m3 0h2m4 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m2 0h1m3 0h1m2 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m3 0h2m2 0h2m4 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m2 0h2m3 0h1m1 0h5m1 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m2 0h1m7 0h1m4 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-21 1h2m2 0h1m2 0h2m2 0h1m-20 1h1m5 0h1m1 0h1m1 0h2m5 0h1m2 0h3m2 0h3m-27 1h3m1 0h1m3 0h1m1 0h2m1 0h6m3 0h2m1 0h2m-26 1h1m1 0h1m1 0h3m2 0h2m2 0h1m4 0h1m2 0h2m-23 1h1m1 0h2m1 0h1m2 0h1m5 0h1m1 0h4m1 0h1m1 0h1m-26 1h1m1 0h2m2 0h1m2 0h1m1 0h1m1 0h2m1 0h1m3 0h1m1 0h2m4 0h1m-29 1h2m1 0h1m3 0h1m2 0h1m1 0h2m1 0h10m2 0h2m-24 1h3m1 0h2m1 0h5m1 0h1m2 0h1m1 0h4m-27 1h1m1 0h1m1 0h2m3 0h1m3 0h2m5 0h2m2 0h1m1 0h1m1 0h1m-25 1h1m1 0h1m1 0h3m1 0h1m1 0h2m1 0h1m2 0h2m3 0h2m-27 1h1m1 0h1m1 0h2m2 0h2m5 0h6m1 0h3m1 0h3m-29 1h2m2 0h1m1 0h1m1 0h3m2 0h3m3 0h1m4 0h2m2 0h1m-29 1h1m1 0h4m1 0h1m6 0h2m4 0h2m-22 1h1m2 0h1m2 0h3m2 0h1m3 0h1m1 0h8m1 0h3m-21 1h2m1 0h1m1 0h1m1 0h1m1 0h2m1 0h1m3 0h2m-26 1h7m2 0h2m1 0h4m1 0h1m1 0h2m1 0h1m1 0h3m-27 1h1m5 0h1m2 0h1m2 0h2m1 0h1m2 0h1m1 0h1m3 0h1m3 0h1m-29 1h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h1m1 0h1m3 0h7m2 0h1m-29 1h1m1 0h3m1 0h1m4 0h2m2 0h2m2 0h1m1 0h1m1 0h1m1 0h2m1 0h1m-29 1h1m1 0h3m1 0h1m3 0h1m3 0h4m2 0h8m-28 1h1m5 0h1m6 0h2m3 0h2m1 0h1m2 0h3m1 0h1m-29 1h7m1 0h2m2 0h4m1 0h1m1 0h1m3 0h2m1 0h1"/></svg>
+
+      </div>
+      <div class="info">
+        <div>
+          <div class="name">James Adrian<br>Castro Celestino</div>
+          <div class="role">ICT Support Specialist · Software Engineer</div>
+        </div>
+        <div class="rows">
+          <div class="rowc"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>celestino.jamesadrian.bsit@gmail.com</div>
+          <div class="rowc"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>0920 784 3373</div>
+          <div class="rowc"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></svg>dyames-my-portfolio.vercel.app</div>
+          <div class="rowc"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>linkedin.com/in/celestinojamesadrian</div>
+        </div>
+      </div>
+    </div>
+    <div class="lab mono">FRONT</div>
+  </div>
+  <div class="side">
+    <div class="card backside" id="back">
+      <div class="wm">JACC<i>.</i></div>
+      <div class="tag mono">SOFTWARE ENGINEER</div>
+    </div>
+    <div class="lab mono">BACK</div>
+  </div>
+</div>
+
+<!-- A4 sheet: 10 fronts on page 1, 10 backs on page 2 (filled by script) -->
+<div class="sheet"><div class="pg" id="pgFront"></div><div class="pg" id="pgBack"></div></div>
+
+<script>
+  const front = document.getElementById('front'), back = document.getElementById('back');
+  for (let i = 0; i < 10; i++) {
+    const f = front.cloneNode(true), b = back.cloneNode(true); f.removeAttribute('id'); b.removeAttribute('id');
+    document.getElementById('pgFront').append(f); document.getElementById('pgBack').append(b);
+  }
+  const MODES = {
+    // one card per page at the exact card size: what print shops ask for
+    shop: '@page { size: 3.5in 2in; margin: 0; } @media print { .sheet { display: none; } .side { break-after: page; } .side:last-child { break-after: auto; } }',
+    // ten cards on A4, fronts then backs, for printing at home or in the office
+    sheet: '@page { size: A4; margin: 10mm 0; } @media print { .preview { display: none; } .sheet { display: block; } }'
+  };
+  function setMode(m) { document.getElementById('mode').textContent = MODES[m]; }
+  setMode('shop');
+  document.querySelectorAll('button[data-mode]').forEach(btn => btn.addEventListener('click', () => { setMode(btn.dataset.mode); window.print(); }));
+</script>
+</body>
+</html>
