@@ -289,13 +289,30 @@
 
   /* featured project */
   
-  .browser { transition: transform .25s ease-out, box-shadow .25s; transform-style: preserve-3d; will-change: transform; }
+  .browser { transition: transform .2s ease-out, box-shadow .25s; will-change: transform; transform-origin: 50% 60%;
+     transform: perspective(1100px) rotateX(calc(var(--sx, 0deg) + var(--hx, 0deg))) rotateY(var(--hy, 0deg)) scale(var(--ss, 1)); }
+
+  /* scroll: words light up one by one */
+  .lit .wd { color: var(--faint); transition: color .35s; }
+  .lit .wd.on { color: var(--text); }
+
+  /* scroll: timeline line draws itself */
+  .fx-tl.timeline::before, .fx-tl.timeline::after { content: ""; position: absolute; left: 139px; top: 22px; width: 1px; }
+  .fx-tl.timeline::before { bottom: 22px; background: var(--border); }
+  .fx-tl.timeline::after { height: calc((100% - 44px) * var(--tl, 0)); background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .fx-tl.timeline li + li { border-top: 0; }
+  .fx-tl.timeline li { column-gap: 36px; }
+  .fx-tl.timeline li::before { content: ""; position: absolute; left: 135px; top: 20px; width: 9px; height: 9px; border-radius: 50%; z-index: 1;
+     background: var(--bg); border: 1.5px solid var(--faint); transition: background .3s, border-color .3s, box-shadow .3s, transform .3s; }
+  .fx-tl.timeline li.on::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); transform: scale(1.15); }
+  .fx-tl.timeline li .t-date, .fx-tl.timeline li > div:last-child { opacity: .45; transition: opacity .4s; }
+  .fx-tl.timeline li.on .t-date, .fx-tl.timeline li.on > div:last-child { opacity: 1; }
+  @media (max-width: 640px) {
+    .fx-tl.timeline::before, .fx-tl.timeline::after { left: 4px; }
+    .fx-tl.timeline li { padding-left: 26px; } .fx-tl.timeline li::before { left: 0; }
+  }
   .project.featured:hover .browser { box-shadow: 0 24px 60px -24px rgba(0,0,0,.6); }
   .stat b { font-variant-numeric: tabular-nums; }
-
-  /* pixelate-on-hover canvas */
-  .thumb { position: relative; }
-  .px { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
 
   /* overlays */
   @keyframes zoomIn { from { opacity: 0; transform: scale(.94); } }
@@ -382,7 +399,7 @@
     <div class="stats">
       <div class="stat"><b>6</b><span>systems shipped</span></div>
       <div class="stat"><b>930+</b><span>automated tests</span></div>
-      <div class="stat"><b>3</b><span>companies served</span></div>
+      <div class="stat"><b>5</b><span>companies served</span></div>
     </div>
 
     <div class="marquee mono" aria-hidden="true">
@@ -730,64 +747,48 @@
     el.addEventListener('pointermove', e => { const r = el.getBoundingClientRect(); el.style.setProperty('--mx', (e.clientX - r.left) + 'px'); el.style.setProperty('--my', (e.clientY - r.top) + 'px'); });
   });
 
-  if (finePointer && !reduced) {
-    // Pixelate on hover: the screenshot breaks into pixels, then a pixel trail follows the cursor
-    document.querySelectorAll('.thumb, .browser-view').forEach(box => {
-      const img = box.querySelector('img'); if (!img) return;
-      const cv = document.createElement('canvas'); cv.className = 'px'; box.append(cv);
-      const ctx = cv.getContext('2d'), tiny = document.createElement('canvas'), tctx = tiny.getContext('2d');
-      let W = 0, H = 0, cell = 16, cols = 0, rows = 0, lv = null, raf = 0, last = 0;
-      const setup = () => {
-        const r = box.getBoundingClientRect();
-        if (!img.isConnected || !img.naturalWidth || !r.width) return false;
-        if (Math.round(r.width) === W && Math.round(r.height) === H) return true;
-        W = Math.round(r.width); H = Math.round(r.height);
-        const dpr = Math.min(devicePixelRatio || 1, 2);
-        cell = Math.max(10, Math.min(24, Math.round(W / 26)));
-        cols = Math.ceil(W / cell); rows = Math.ceil(H / cell); lv = new Float32Array(cols * rows);
-        cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.imageSmoothingEnabled = false;
-        const sc = Math.max(W / img.naturalWidth, H / img.naturalHeight), dw = img.naturalWidth * sc, dh = img.naturalHeight * sc;
-        tiny.width = cols; tiny.height = rows; tctx.imageSmoothingQuality = 'high';
-        tctx.drawImage(img, (W - dw) / 2 / cell, 0, dw / cell, dh / cell);
-        return true;
-      };
-      const frame = t => {
-        const dt = Math.min((t - last) / 1000, .05); last = t; let alive = false;
-        ctx.clearRect(0, 0, W, H);
-        for (let i = 0; i < lv.length; i++) {
-          let v = lv[i]; if (v <= 0) continue;
-          v -= dt * 1.5; lv[i] = v; if (v <= 0) continue;
-          const x = i % cols, y = (i / cols) | 0;
-          ctx.globalAlpha = Math.min(v, 1); ctx.drawImage(tiny, x, y, 1, 1, x * cell, y * cell, cell + .5, cell + .5); alive = true;
-        }
-        raf = alive ? requestAnimationFrame(frame) : 0;
-      };
-      const kick = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } };
-      box.addEventListener('pointerenter', () => {
-        if (!setup()) return;
-        for (let i = 0; i < lv.length; i++) lv[i] = Math.max(lv[i], .35 + Math.random() * .9);
-        kick();
-      });
-      box.addEventListener('pointermove', e => {
-        if (!lv) return; const r = box.getBoundingClientRect();
-        const cx = (e.clientX - r.left) / cell, cy = (e.clientY - r.top) / cell, R = 3.2;
-        for (let y = Math.max(0, Math.floor(cy - R)); y <= Math.min(rows - 1, cy + R); y++)
-          for (let x = Math.max(0, Math.floor(cx - R)); x <= Math.min(cols - 1, cx + R); x++) {
-            const d = Math.hypot(x + .5 - cx, y + .5 - cy);
-            if (d < R && Math.random() > .25) lv[y * cols + x] = Math.max(lv[y * cols + x], 1.25 - d / R * .6);
-          }
-        kick();
-      });
-    });
+  // Scroll-linked effects
+  if (!reduced) {
+    const c01 = v => Math.max(0, Math.min(1, v));
+    const frameEl = document.querySelector('.project.featured .browser');
+    const lit = document.querySelector('.project.featured .p-desc');
+    const tl = document.querySelector('.timeline');
+    let words = [];
+    if (lit) { lit.classList.add('lit');
+      lit.innerHTML = lit.textContent.trim().split(/\s+/).map(w => `<span class="wd">${w}</span>`).join(' ');
+      words = [...lit.querySelectorAll('.wd')]; }
+    if (tl) tl.classList.add('fx-tl');
+    const items = tl ? [...tl.children] : [];
+    let ticking = false;
+    const update = () => {
+      ticking = false; const vh = innerHeight;
+      if (frameEl) { // preview starts tilted back and unfolds flat as it scrolls up
+        const p = c01((vh - frameEl.getBoundingClientRect().top) / (vh * .7));
+        frameEl.style.setProperty('--sx', (1 - p) * 24 + 'deg'); frameEl.style.setProperty('--ss', .9 + p * .1);
+      }
+      if (words.length) { // sentence lights up word by word
+        const p = c01((vh * .92 - lit.getBoundingClientRect().top) / (vh * .35)), n = Math.round(p * words.length);
+        words.forEach((w, i) => w.classList.toggle('on', i < n));
+      }
+      if (tl) { // timeline line grows with the scroll
+        const r = tl.getBoundingClientRect(), mark = vh * .62;
+        tl.style.setProperty('--tl', c01((mark - r.top - 22) / (r.height - 44)));
+        items.forEach(li => li.classList.toggle('on', li.getBoundingClientRect().top + 24 < mark));
+      }
+    };
+    const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    addEventListener('scroll', req, { passive: true }); addEventListener('resize', req); update();
+  }
 
+  if (finePointer && !reduced) {
     // 3D tilt on the featured project preview
     const feat = document.querySelector('.project.featured'), br = feat && feat.querySelector('.browser');
     if (br) {
       const clamp = v => Math.max(-.5, Math.min(.5, v));
       feat.addEventListener('pointermove', e => { const r = br.getBoundingClientRect();
         const x = clamp((e.clientX - r.left) / r.width - .5), y = clamp((e.clientY - r.top) / r.height - .5);
-        br.style.transform = `perspective(1100px) rotateY(${x * 5}deg) rotateX(${-y * 5}deg) scale(1.012)`; });
-      feat.addEventListener('pointerleave', () => { br.style.transform = ''; });
+        br.style.setProperty('--hy', x * 5 + 'deg'); br.style.setProperty('--hx', -y * 5 + 'deg'); });
+      feat.addEventListener('pointerleave', () => { br.style.setProperty('--hy', '0deg'); br.style.setProperty('--hx', '0deg'); });
     }
   }
 </script>
